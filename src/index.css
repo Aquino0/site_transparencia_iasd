@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+    --color-blue-900: #32586E;
+    /* Primary Brand Color */
+    --color-blue-800: #2a4a5d;
+    /* Hover State */
+    --color-blue-50: #EFEFEA;
+    /* Brand Secondary / Background */
+    --color-blue-100: #E0E0D8;
+    /* Slightly darker secondary */
+}
+
+@media print {
+
+    header,
+    footer,
+    button {
+        display: none !important;
+    }
+
+    .print\:hidden {
+        display: none !important;
+    }
+}
+
+body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
