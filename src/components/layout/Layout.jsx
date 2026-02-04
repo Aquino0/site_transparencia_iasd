@@ -2,6 +2,7 @@ import React from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { WhatsappButton } from '../ui/WhatsappButton';
+import { ConfidentialityModal } from '../ui/ConfidentialityModal';
 
 export function Layout({ children }) {
     return (
@@ -11,6 +12,7 @@ export function Layout({ children }) {
                 {children}
             </main>
             <WhatsappButton />
+            <ConfidentialityModal />
             <Footer />
         </div>
     );
