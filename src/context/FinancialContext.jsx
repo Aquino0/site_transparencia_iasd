@@ -190,6 +190,59 @@ export function FinancialProvider({ children }) {
         }
     }
 
+    async function fetchSettings() {
+        try {
+            const { data, error } = await supabase
+                .from('app_settings')
+                .select('value')
+                .eq('key', 'general')
+                .single();
+
+            if (error) {
+                // Se der erro (ex: offline, ou tabela não existe), tenta usar o localStorage como fallback
+                // Mas não sobrescreve se o erro for apenas de conexão
+                console.error('Erro ao buscar configurações:', error.message);
+                return;
+            }
+
+            if (data && data.value) {
+                setSettings(prev => ({ ...prev, ...data.value }));
+                // Atualiza local também para garantir sync rápido em refresh
+                localStorage.setItem('iasd_settings', JSON.stringify(data.value));
+            }
+        } catch (error) {
+            console.error('Erro fetchSettings:', error);
+        }
+    }
+
+    // Função para atualizar as configurações no banco
+    const updateSettings = async (newSettings) => {
+        // Atualiza estado local imediatamente para feedback rápido
+        setSettings(newSettings);
+        localStorage.setItem('iasd_settings', JSON.stringify(newSettings));
+
+        if (!isAdmin) return; // Só admin salva no banco
+
+        try {
+            const { error } = await supabase
+                .from('app_settings')
+                .upsert({
+                    key: 'general',
+                    value: newSettings,
+                    updated_at: new Date()
+                }, { onConflict: 'key' });
+
+            if (error) throw error;
+        } catch (error) {
+            alert('Erro ao salvar configurações no servidor: ' + error.message);
+        }
+    };
+
+    // Carregar configurações do banco ao iniciar
+    useEffect(() => {
+        fetchSettings();
+    }, []);
+
     // Login agora usa Supabase Auth (Email + Senha)
     const login = async (email, password) => {
         const { error } = await supabase.auth.signInWithPassword({
@@ -208,11 +261,6 @@ export function FinancialProvider({ children }) {
         await supabase.auth.signOut();
     };
 
-    // Persistir configurações de texto locais (para não complicar a tabela de banco agora)
-    useEffect(() => {
-        localStorage.setItem('iasd_settings', JSON.stringify(settings));
-    }, [settings]);
-
     return (
         <FinancialContext.Provider value={{
             transactions,
@@ -220,7 +268,7 @@ export function FinancialProvider({ children }) {
             removeTransaction,
             updateTransaction,
             settings,
-            setSettings,
+            setSettings: updateSettings, // Expor a nova função que salva no banco
             isAdmin,
             login,
             logout,
