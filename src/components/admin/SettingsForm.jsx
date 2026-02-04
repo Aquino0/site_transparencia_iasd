@@ -8,7 +8,8 @@ export function SettingsForm({ onCancel }) {
         churchName: settings.churchName,
         welcomeText: settings.welcomeText,
         bibleVerseText: settings.bibleVerse?.text || '',
-        bibleVerseRef: settings.bibleVerse?.reference || ''
+        bibleVerseRef: settings.bibleVerse?.reference || '',
+        visibleMonths: settings.visibleMonths || []
     });
 
     const handleSubmit = (e) => {
@@ -20,7 +21,8 @@ export function SettingsForm({ onCancel }) {
             bibleVerse: {
                 text: formData.bibleVerseText,
                 reference: formData.bibleVerseRef
-            }
+            },
+            visibleMonths: formData.visibleMonths
         });
         onCancel();
     };
@@ -83,6 +85,45 @@ export function SettingsForm({ onCancel }) {
                                     placeholder="Ex: Salmos 23:1"
                                 />
                             </div>
+                        </div>
+                    </div>
+
+                    <div className="border-t border-gray-100 pt-4 mt-2">
+                        <h4 className="font-semibold text-gray-800 mb-3 text-sm">Visibilidade Pública</h4>
+                        <p className="text-xs text-gray-500 mb-2">Selecione os meses que devem aparecer para o público. Se nenhum for selecionado, todos aparecerão.</p>
+                        <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto p-2 border rounded bg-gray-50">
+                            {
+                                // Gerar lista de meses (do ano passado até o próximo ano)
+                                Array.from({ length: 36 }, (_, i) => {
+                                    const d = new Date();
+                                    d.setMonth(d.getMonth() - 12 + i);
+                                    return d.toISOString().slice(0, 7);
+                                }).map(monthStr => {
+                                    const [y, m] = monthStr.split('-');
+                                    const label = `${m}/${y}`;
+                                    const isSelected = formData.visibleMonths?.includes(monthStr);
+
+                                    return (
+                                        <label key={monthStr} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-white p-1 rounded">
+                                            <input
+                                                type="checkbox"
+                                                checked={isSelected}
+                                                onChange={(e) => {
+                                                    let newMonths = [...(formData.visibleMonths || [])];
+                                                    if (e.target.checked) {
+                                                        newMonths.push(monthStr);
+                                                    } else {
+                                                        newMonths = newMonths.filter(m => m !== monthStr);
+                                                    }
+                                                    setFormData({ ...formData, visibleMonths: newMonths });
+                                                }}
+                                                className="rounded border-gray-300 text-blue-900 focus:ring-blue-900"
+                                            />
+                                            {label}
+                                        </label>
+                                    );
+                                })
+                            }
                         </div>
                     </div>
 

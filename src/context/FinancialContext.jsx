@@ -11,14 +11,21 @@ export function FinancialProvider({ children }) {
     const [isAdmin, setIsAdmin] = useState(false);
     const [settings, setSettings] = useState(() => {
         const saved = localStorage.getItem('iasd_settings');
-        return saved ? JSON.parse(saved) : {
+        const defaults = {
             churchName: "IASD Vila Pinheiro",
             welcomeText: "Este portal apresenta a destinação fiel dos recursos sagrados entregues à igreja.",
             bibleVerse: {
                 text: "Ora, o que se requer dos despenseiros é que cada um deles seja encontrado fiel.",
                 reference: "1 Coríntios 4:2"
-            }
+            },
+            visibleMonths: []
         };
+
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            return { ...defaults, ...parsed, visibleMonths: parsed.visibleMonths || [] };
+        }
+        return defaults;
     });
 
     // Carregar Transações do Supabase
@@ -197,6 +204,7 @@ export function FinancialProvider({ children }) {
     };
 
     const logout = async () => {
+        setIsAdmin(false);
         await supabase.auth.signOut();
     };
 

@@ -8,7 +8,22 @@ import { ContributionTable } from '../components/ui/ContributionTable';
 import { BookOpen, Printer } from 'lucide-react';
 
 export function PublicDashboard() {
-    const { settings, transactions, selectedMonth, monthlyStats } = useFinancial();
+    const { settings, transactions, selectedMonth, monthlyStats, setSelectedMonth, isAdmin } = useFinancial();
+
+    // Redirecionar se o mês atual não for permitido
+    React.useEffect(() => {
+        // Nota: Removemos o check de isAdmin para que o Dashboard Público sempre se comporte como tal,
+        // mesmo se um admin estiver visualizando.
+        if (!settings.visibleMonths || settings.visibleMonths.length === 0) return; // Sem restrições
+
+        if (!settings.visibleMonths.includes(selectedMonth)) {
+            // Tenta achar o mês visível mais próximo
+            const sortedMonths = [...settings.visibleMonths].sort().reverse(); // Decrescente
+            if (sortedMonths.length > 0) {
+                setSelectedMonth(sortedMonths[0]);
+            }
+        }
+    }, [selectedMonth, settings.visibleMonths, setSelectedMonth]);
 
     // Filtros e Cálculos Otimizados
     const { currentTransactions, previousBalance, totalIncome, totalExpense, lastMonthIncome, lastMonthExpense } = useMemo(() => {
@@ -94,7 +109,7 @@ export function PublicDashboard() {
                 </button>
             </div>
 
-            <MonthSelector />
+            <MonthSelector restrictView={true} />
 
             <div className="mb-8 mt-4">
                 <ContributionTable stats={monthlyStats} />
