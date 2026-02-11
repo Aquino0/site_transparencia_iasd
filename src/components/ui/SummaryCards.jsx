@@ -39,20 +39,22 @@ function Card({ title, value, type, icon: Icon, previousValue }) {
                     value >= 0 ? 'text-blue-600 bg-blue-50' : 'text-orange-600 bg-orange-50';
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col items-center text-center transition hover:shadow-md relative overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-slate-100 dark:border-gray-700 p-6 flex flex-col items-center text-center transition-colors duration-300 hover:shadow-md relative overflow-hidden">
             <div className={cn("p-3 rounded-full mb-3", colorClass)}>
                 <Icon size={28} />
             </div>
-            <p className="text-sm font-medium text-slate-500 uppercase tracking-wide">{title}</p>
+            <p className="text-sm font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wide">{title}</p>
             <h3 className={cn("text-2xl font-bold mt-1",
-                type === 'income' ? 'text-green-700' :
-                    type === 'expense' ? 'text-red-700' : 'text-slate-800'
+                type === 'income' ? 'text-green-700 dark:text-green-400' :
+                    type === 'expense' ? 'text-red-700 dark:text-red-400' : 'text-slate-800 dark:text-white'
             )}>
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
             </h3>
 
             {(type === 'income' || type === 'expense') && (
-                <TrendBadge current={value} previous={previousValue} type={type} />
+                <div className="mt-2">
+                    <TrendBadge current={value} previous={previousValue} type={type} />
+                </div>
             )}
         </div>
     );

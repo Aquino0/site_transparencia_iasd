@@ -27,4 +27,9 @@
 body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    @apply transition-colors duration-300;
+}
+
+html.dark body {
+    @apply bg-gray-900 text-gray-100;
 }

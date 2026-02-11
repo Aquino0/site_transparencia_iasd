@@ -141,9 +141,9 @@ export function PublicDashboard() {
             </div>
 
             {/* Área de Observações do Tesoureiro */}
-            <div className="mt-12 bg-slate-50 border border-slate-200 rounded-lg p-6">
-                <h4 className="font-semibold text-gray-900 mb-2">Nota da Tesouraria</h4>
-                <p className="text-gray-600 text-sm">
+            <div className="mt-12 bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg p-6 transition-colors duration-300">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Nota da Tesouraria</h4>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
                     Os valores apresentados referem-se aos lançamentos efetivados no sistema até a presente data.
                     Dúvidas podem ser tratadas diretamente com a tesouraria após os cultos.
                 </p>

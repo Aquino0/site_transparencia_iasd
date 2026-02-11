@@ -53,22 +53,22 @@ export function MonthSelector({ restrictView = false }) {
     // Nota: Em produção, poderíamos pré-calcular limites.
 
     return (
-        <div className="flex items-center justify-center gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-8">
+        <div className="flex items-center justify-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 mb-8 transition-colors duration-300">
             <button
                 onClick={handlePrevMonth}
-                className="p-2 hover:bg-gray-100 rounded-full text-gray-600 hover:text-blue-900 transition"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full text-gray-600 dark:text-gray-400 hover:text-blue-900 dark:hover:text-blue-400 transition"
             >
                 <ChevronLeft size={24} />
             </button>
 
-            <div className="flex items-center gap-2 text-xl font-semibold text-gray-800 capitalize min-w-[200px] justify-center">
-                <Calendar size={20} className="text-blue-900" />
+            <div className="flex items-center gap-2 text-xl font-semibold text-gray-800 dark:text-white capitalize min-w-[200px] justify-center">
+                <Calendar size={20} className="text-blue-900 dark:text-blue-400" />
                 {formattedMonth}
             </div>
 
             <button
                 onClick={handleNextMonth}
-                className="p-2 hover:bg-gray-100 rounded-full text-gray-600 hover:text-blue-900 transition"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full text-gray-600 dark:text-gray-400 hover:text-blue-900 dark:hover:text-blue-400 transition"
             >
                 <ChevronRight size={24} />
             </button>
