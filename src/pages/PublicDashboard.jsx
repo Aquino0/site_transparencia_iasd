@@ -76,8 +76,8 @@ export function PublicDashboard() {
     const expenseTransactions = currentTransactions.filter(t => t.type === 'expense');
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <HeroSequence className="rounded-2xl mb-10 text-center py-16 px-6 shadow-xl">
+        <div className="mx-auto py-8">
+            <HeroSequence className="w-full mb-10 text-center py-16 px-6">
                 <div className="text-white">
                     <h2 className="text-4xl font-bold mb-4 drop-shadow-md">Prestação de Contas</h2>
                     <p className="text-gray-100 text-lg max-w-2xl mx-auto mb-6 drop-shadow-md">
@@ -96,53 +96,55 @@ export function PublicDashboard() {
                 </div>
             </HeroSequence>
 
-            <div className="flex justify-end mb-4 print:hidden">
-                <button
-                    onClick={() => window.print()}
-                    className="text-blue-900 font-semibold hover:underline text-sm flex items-center gap-1 bg-white px-3 py-1 rounded border border-blue-100 shadow-sm"
-                >
-                    <Printer size={16} /> Exportar Relatório
-                </button>
-            </div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-end mb-4 print:hidden mt-4">
+                    <button
+                        onClick={() => window.print()}
+                        className="text-blue-900 font-semibold hover:underline text-sm flex items-center gap-1 bg-white px-3 py-1 rounded border border-blue-100 shadow-sm"
+                    >
+                        <Printer size={16} /> Exportar Relatório
+                    </button>
+                </div>
 
-            <MonthSelector restrictView={true} />
+                <MonthSelector restrictView={true} />
 
-            <div className="mb-8 mt-4">
-                <ContributionTable stats={monthlyStats} />
-            </div>
+                <div className="mb-8 mt-4">
+                    <ContributionTable stats={monthlyStats} />
+                </div>
 
-            <SummaryCards
-                income={totalIncome}
-                expense={totalExpense}
-                previousBalance={previousBalance}
-                lastMonthIncome={lastMonthIncome}
-                lastMonthExpense={lastMonthExpense}
-            />
-
-            <ChartsSection transactions={currentTransactions} />
-
-
-
-            <div className="grid lg:grid-cols-2 gap-8">
-                <TransactionTable
-                    title="Entradas do Mês"
-                    transactions={incomeTransactions}
-                    type="income"
+                <SummaryCards
+                    income={totalIncome}
+                    expense={totalExpense}
+                    previousBalance={previousBalance}
+                    lastMonthIncome={lastMonthIncome}
+                    lastMonthExpense={lastMonthExpense}
                 />
-                <TransactionTable
-                    title="Saídas do Mês"
-                    transactions={expenseTransactions}
-                    type="expense"
-                />
-            </div>
 
-            {/* Área de Observações do Tesoureiro */}
-            <div className="mt-12 bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg p-6 transition-colors duration-300">
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Nota da Tesouraria</h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">
-                    Os valores apresentados referem-se aos lançamentos efetivados no sistema até a presente data.
-                    Dúvidas podem ser tratadas diretamente com a tesouraria após os cultos.
-                </p>
+                <ChartsSection transactions={currentTransactions} />
+
+
+
+                <div className="grid lg:grid-cols-2 gap-8">
+                    <TransactionTable
+                        title="Entradas do Mês"
+                        transactions={incomeTransactions}
+                        type="income"
+                    />
+                    <TransactionTable
+                        title="Saídas do Mês"
+                        transactions={expenseTransactions}
+                        type="expense"
+                    />
+                </div>
+
+                {/* Área de Observações do Tesoureiro */}
+                <div className="mt-12 bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg p-6 transition-colors duration-300">
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Nota da Tesouraria</h4>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">
+                        Os valores apresentados referem-se aos lançamentos efetivados no sistema até a presente data.
+                        Dúvidas podem ser tratadas diretamente com a tesouraria após os cultos.
+                    </p>
+                </div>
             </div>
         </div>
     );
