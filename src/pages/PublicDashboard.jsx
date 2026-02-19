@@ -7,6 +7,8 @@ import { ChartsSection } from '../components/charts/ChartsSection';
 import { ContributionTable } from '../components/ui/ContributionTable';
 import { BookOpen, Printer } from 'lucide-react';
 
+import { HeroSequence } from '../components/ui/HeroSequence';
+
 export function PublicDashboard() {
     const { settings, transactions, selectedMonth, monthlyStats, setSelectedMonth, isAdmin } = useFinancial();
 
@@ -75,21 +77,15 @@ export function PublicDashboard() {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div
-                className="relative rounded-2xl overflow-hidden mb-10 text-center py-16 px-6 bg-cover bg-center"
-                style={{ backgroundImage: "url('/header-bg.png')" }}
-            >
-                {/* Overlay Escuro para Legibilidade */}
-                <div className="absolute inset-0 bg-black/60"></div>
-
-                <div className="relative z-10 text-white">
-                    <h2 className="text-4xl font-bold mb-4">Prestação de Contas</h2>
-                    <p className="text-gray-100 text-lg max-w-2xl mx-auto mb-6">
+            <HeroSequence className="rounded-2xl mb-10 text-center py-16 px-6 shadow-xl">
+                <div className="text-white">
+                    <h2 className="text-4xl font-bold mb-4 drop-shadow-md">Prestação de Contas</h2>
+                    <p className="text-gray-100 text-lg max-w-2xl mx-auto mb-6 drop-shadow-md">
                         {settings.welcomeText}
                     </p>
 
                     {settings.bibleVerse && (
-                        <div className="inline-block bg-white/10 backdrop-blur-sm border border-white/20 px-6 py-4 rounded-xl italic">
+                        <div className="inline-block bg-white/10 backdrop-blur-sm border border-white/20 px-6 py-4 rounded-xl italic shadow-lg">
                             <div className="flex items-center justify-center gap-2 mb-2 not-italic font-bold text-xs uppercase tracking-wider text-blue-200">
                                 <div className="bg-blue-500/20 p-1 rounded-full"><BookOpen size={14} /></div> Versículo do Mês
                             </div>
@@ -98,7 +94,7 @@ export function PublicDashboard() {
                         </div>
                     )}
                 </div>
-            </div>
+            </HeroSequence>
 
             <div className="flex justify-end mb-4 print:hidden">
                 <button
