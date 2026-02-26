@@ -31,7 +31,7 @@ export function ContributionTable({ stats }) {
         show: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.1
+                staggerChildren: 0.05
             }
         }
     };
@@ -43,9 +43,9 @@ export function ContributionTable({ stats }) {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.3 }}
             className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-slate-100 dark:border-gray-700 overflow-hidden transition-colors duration-300"
         >
             <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50 dark:bg-gray-700/30">
@@ -80,7 +80,7 @@ export function ContributionTable({ stats }) {
                             <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: calcPercent(row.count) }}
-                                transition={{ duration: 1, delay: 0.5 }}
+                                transition={{ duration: 0.5 }}
                                 className={`h-1.5 rounded-full ${row.color}`}
                             ></motion.div>
                         </div>
@@ -116,7 +116,7 @@ export function ContributionTable({ stats }) {
                                         <motion.div
                                             initial={{ width: 0 }}
                                             animate={{ width: calcPercent(row.count) }}
-                                            transition={{ duration: 1, delay: 0.5 }}
+                                            transition={{ duration: 0.5 }}
                                             className={`h-2 rounded-full ${row.color}`}
                                         ></motion.div>
                                     </div>
