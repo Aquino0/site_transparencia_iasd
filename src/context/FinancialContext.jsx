@@ -125,6 +125,8 @@ export function FinancialProvider({ children }) {
         }
     };
 
+    const [monthlyStats, setMonthlyStats] = useState(null);
+
     // Carregar Transações e Estatísticas do Supabase
     useEffect(() => {
         let isActive = true;
