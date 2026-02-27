@@ -125,35 +125,45 @@ export function FinancialProvider({ children }) {
         }
     };
 
-    const [monthlyStats, setMonthlyStats] = useState(null);
-
     // Carregar Transações e Estatísticas do Supabase
     useEffect(() => {
-        fetchTransactions();
-        fetchMonthlyStats();
-    }, [selectedMonth]); // Recarregar quando mudar o mês
+        let isActive = true;
 
-    async function fetchMonthlyStats() {
-        try {
-            const { data, error } = await supabase
-                .from('monthly_stats')
-                .select('*')
-                .eq('month_key', selectedMonth)
-                .single();
+        async function loadStats() {
+            try {
+                const { data, error } = await supabase
+                    .from('monthly_stats')
+                    .select('*')
+                    .eq('month_key', selectedMonth)
+                    .single();
 
-            if (error && error.code !== 'PGRST116') throw error; // Ignora erro de "não encontrado" (PGRST116)
+                if (!isActive) return;
 
-            // Se não existir, retorna objeto vazio/zerado para não quebrar a UI
-            setMonthlyStats(data || {
-                regular_members: 0,
-                tithers_count: 0,
-                offerers_count: 0,
-                non_contributors_count: 0
-            });
-        } catch (error) {
-            console.error('Erro ao buscar estatísticas:', error.message);
+                if (error && error.code !== 'PGRST116') throw error;
+
+                // Se não existir, retorna objeto vazio/zerado para não quebrar a UI
+                setMonthlyStats(data || {
+                    regular_members: 0,
+                    tithers_count: 0,
+                    offerers_count: 0,
+                    non_contributors_count: 0
+                });
+            } catch (error) {
+                console.error('Erro ao buscar estatísticas:', error.message);
+            }
         }
-    }
+
+        loadStats();
+
+        return () => {
+            isActive = false;
+        };
+    }, [selectedMonth]); // Recarregar estatísticas quando mudar o mês
+
+    // Carregar transações apenas uma vez no mount (ou quando necessário)
+    useEffect(() => {
+        fetchTransactions();
+    }, []);
 
     async function updateMonthlyStats(stats) {
         try {
@@ -182,6 +192,7 @@ export function FinancialProvider({ children }) {
 
             if (result.error) throw result.error;
 
+            console.log('updateMonthlyStats success, result data:', result.data[0]);
             setMonthlyStats(result.data[0]);
             return true;
         } catch (error) {
