@@ -3,14 +3,22 @@ import { Users, PieChart } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function ContributionTable({ stats }) {
-    if (!stats || stats.regular_members === 0) {
+    if (stats === null) {
+        return (
+            <div className="flex items-center justify-center p-8 bg-white dark:bg-gray-800 rounded-xl border border-slate-100 dark:border-gray-700 transition-colors duration-300">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
+
+    if (stats.regular_members === 0) {
         return (
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 text-center text-gray-500"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-slate-100 dark:border-gray-700 p-6 text-center text-gray-500 dark:text-gray-400 transition-colors duration-300"
             >
-                <Users className="mx-auto mb-2 text-gray-300" size={32} />
+                <Users className="mx-auto mb-2 text-gray-300 dark:text-gray-600" size={32} />
                 <p>Nenhum dado estatístico lançado para este mês.</p>
             </motion.div>
         );

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
 const CATEGORIES = [
-    'Dízimos', 'Ofertas', 'Cantina', 'Outros Entradas',
+    'Ofertas',
     'Ação Solidária Adventista (ASA)',
     'Clube dos Aventureiros',
     'Clube dos Desbravadores',
@@ -17,12 +17,7 @@ const CATEGORIES = [
     'Ministério Pessoal',
     'Sociedade dos Jovens Adventistas',
     'Sonoplastia',
-    'Tesouraria',
-    'Manutenção',
-    'Energia',
-    'Água',
-    'Limpeza',
-    'Outras Saídas'
+    'Tesouraria'
 ];
 
 export function TransactionForm({ onSubmit, initialData, onCancel }) {

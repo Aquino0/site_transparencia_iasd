@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-export function HeroSequence({ children, className = '' }) {
+export function HeroSequence({ children, className = '', videoUrl }) {
     const canvasRef = useRef(null);
     const imagesRef = useRef([]);
     const frameRef = useRef(0);
@@ -9,8 +9,9 @@ export function HeroSequence({ children, className = '' }) {
     const totalFrames = 80;
 
     useEffect(() => {
-        let isMounted = true;
+        if (videoUrl) return; // Pula o carregamento da sequência se for usar vídeo
 
+        let isMounted = true;
         const loadImages = async () => {
             const promises = [];
             for (let i = 0; i < totalFrames; i++) {
@@ -40,19 +41,18 @@ export function HeroSequence({ children, className = '' }) {
             isMounted = false;
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
         };
-    }, []);
+    }, [videoUrl]);
 
     const startAnimation = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext('2d', { alpha: false });
 
-        // Define canvas resolution keeping 16:9 ratio
         canvas.width = 1920;
         canvas.height = 1080;
 
         let lastTime = 0;
-        const fpsInterval = 1000 / 30; // 30 FPS para movimento suave
+        const fpsInterval = 1000 / 30;
 
         const animate = (time) => {
             if (!lastTime) lastTime = time;
@@ -75,18 +75,30 @@ export function HeroSequence({ children, className = '' }) {
 
     return (
         <div className={`relative overflow-hidden bg-gray-900 ${className}`}>
-            {!isLoaded && (
+            {!isLoaded && !videoUrl && (
                 <div
                     className="absolute inset-0 bg-cover bg-center"
                     style={{ backgroundImage: "url('/header-bg.png')" }}
                 />
             )}
-            <canvas
-                ref={canvasRef}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-            />
-            {/* Overlay Escuro para Legibilidade */}
-            <div className="absolute inset-0 bg-black/60 md:bg-black/50"></div>
+            
+            {videoUrl ? (
+                <video
+                    src={videoUrl}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                />
+            ) : (
+                <canvas
+                    ref={canvasRef}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                />
+            )}
+            {/* Overlay Escuro para Legibilidade (Removido por solicitação) */}
+            {/* <div className="absolute inset-0 bg-black/60 md:bg-black/50"></div> */}
 
             {/* Content */}
             <div className="relative z-10 w-full h-full">

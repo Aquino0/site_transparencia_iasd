@@ -1,9 +1,9 @@
 import React from 'react';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell } from 'recharts';
 import { useTheme } from '../../context/ThemeContext';
 
 // New Brand Colors
-const COLORS = ['#32586E', '#4A6F8A', '#6B8CA3', '#8FA8BD', '#B5C5D4', '#DAE2EA'];
+const COLORS = ['#2DD4BF', '#34D399', '#FB923C', '#F87171', '#818CF8', '#A78BFA', '#F472B6'];
 
 export function ChartsSection({ transactions }) {
     const { theme } = useTheme();
@@ -46,7 +46,7 @@ export function ChartsSection({ transactions }) {
     return (
         <div className="grid md:grid-cols-2 gap-6 mb-10 print:grid-cols-2">
             {/* Horizontal Bar Chart for Expenses Distribution */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-gray-700 transition-colors duration-300">
+            <div className="bg-gradient-to-r from-[#FDF6E3]/40 to-[#E5F6F0]/40 dark:from-gray-800/90 dark:to-gray-800/90 p-6 rounded-2xl shadow-sm border border-white/40 dark:border-gray-700/30 transition-all duration-300 backdrop-blur-sm">
                 <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-6 border-l-4 border-blue-900 dark:border-blue-500 pl-3">
                     Despesas por Departamento
                 </h3>
@@ -54,33 +54,29 @@ export function ChartsSection({ transactions }) {
                 {expensesData.length > 0 ? (
                     <div className="w-full h-[350px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart
-                                layout="vertical"
-                                data={expensesData}
-                                margin={{ top: 5, right: 30, left: 40, bottom: 5 }} // Increased left margin for labels
-                            >
-                                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke={gridColor} />
-                                <XAxis type="number" hide />
-                                <YAxis
-                                    dataKey="name"
-                                    type="category"
-                                    width={150}
-                                    tick={{ fontSize: 13, fill: axisColor }}
-                                    axisLine={false}
-                                    tickLine={false}
-                                />
-                                <Tooltip
-                                    cursor={{ fill: isDark ? '#374151' : '#f3f4f6' }}
+                            <PieChart margin={{ left: 35, right: 35 }}>
+                                <Pie
+                                    data={expensesData}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={70}
+                                    outerRadius={80}
+                                    paddingAngle={3}
+                                    dataKey="value"
+                                    nameKey="name"
+                                    labelLine={true}
+                                    label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                                >
+                                    {expensesData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Legend layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ paddingTop: "10px", fontSize: "11px", fontWeight: 500 }} />
+                                <Tooltip 
                                     contentStyle={tooltipStyle}
                                     formatter={(value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
                                 />
-                                <Bar
-                                    dataKey="value"
-                                    fill={barColor}
-                                    radius={[0, 4, 4, 0]}
-                                    barSize={20}
-                                />
-                            </BarChart>
+                            </PieChart>
                         </ResponsiveContainer>
                     </div>
                 ) : (
@@ -91,13 +87,23 @@ export function ChartsSection({ transactions }) {
             </div>
 
             {/* Comparison Chart */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-gray-700 transition-colors duration-300">
+            <div className="bg-gradient-to-r from-[#FDF6E3]/40 to-[#E5F6F0]/40 dark:from-gray-800/90 dark:to-gray-800/90 p-6 rounded-2xl shadow-sm border border-white/40 dark:border-gray-700/30 transition-all duration-300 backdrop-blur-sm">
                 <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-6 border-l-4 border-blue-900 dark:border-blue-500 pl-3">
                     Balanço do Mês
                 </h3>
                 <div className="w-full h-[350px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={summaryData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                            <defs>
+                                <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor="#10B981" stopOpacity={0.85}/>
+                                    <stop offset="100%" stopColor="#047857" stopOpacity={0.85}/>
+                                </linearGradient>
+                                <linearGradient id="expenseGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor="#EF4444" stopOpacity={0.85}/>
+                                    <stop offset="100%" stopColor="#B91C1C" stopOpacity={0.85}/>
+                                </linearGradient>
+                            </defs>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
                             <XAxis
                                 dataKey="name"
@@ -120,7 +126,11 @@ export function ChartsSection({ transactions }) {
                                 dataKey="value"
                                 radius={[6, 6, 0, 0]}
                                 barSize={60}
-                            />
+                            >
+                                {summaryData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.name === 'Entradas' ? 'url(#incomeGrad)' : 'url(#expenseGrad)'} />
+                                ))}
+                            </Bar>
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
