@@ -47,10 +47,10 @@ export function Donation() {
                 {/* 🪟 Card Glassmorphism (Efeito Vidro) */}
                 <div className="group bg-white/80 dark:bg-gray-800/60 backdrop-blur-md p-4 md:p-6 rounded-3xl shadow-[0_20px_50px_rgba(8,_112,_184,_0.08)] dark:shadow-[0_20px_50px_rgba(0,_0,_0,_0.3)] border border-white/40 dark:border-gray-700/30 max-w-3xl w-full transition-all duration-500 hover:scale-[1.01] hover:shadow-2xl">
                     <img 
-                        src="/iasdd.png" 
+                        src="/iasdd.jpg" 
                         alt="QR Code Pix e 7me" 
                         className="w-full h-auto rounded-2xl select-none group-hover:opacity-95 transition-opacity duration-300"
-                        loading="lazy"
+                        
                     />
                 </div>
                 
