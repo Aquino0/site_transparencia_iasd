@@ -89,6 +89,7 @@ export function HeroSequence({ children, className = '', videoUrl }) {
                     muted
                     loop
                     playsInline
+                    poster="/header-bg.png"
                     className="absolute inset-0 w-full h-full object-cover"
                 />
             ) : (

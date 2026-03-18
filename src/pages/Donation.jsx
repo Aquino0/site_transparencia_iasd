@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 export function Donation() {
     const [copied, setCopied] = useState(false);
+    const [imageLoaded, setImageLoaded] = useState(false);
     const pixKey = "vilapinheiro.pix.arj@adventistas.org";
 
     const handleCopyPix = () => {
@@ -45,12 +46,19 @@ export function Donation() {
                 </p>
                 
                 {/* 🪟 Card Glassmorphism (Efeito Vidro) */}
-                <div className="group bg-white/80 dark:bg-gray-800/60 backdrop-blur-md p-4 md:p-6 rounded-3xl shadow-[0_20px_50px_rgba(8,_112,_184,_0.08)] dark:shadow-[0_20px_50px_rgba(0,_0,_0,_0.3)] border border-white/40 dark:border-gray-700/30 max-w-3xl w-full transition-all duration-500 hover:scale-[1.01] hover:shadow-2xl">
+                <div className="group relative bg-white/80 dark:bg-gray-800/60 backdrop-blur-md p-4 md:p-6 rounded-3xl shadow-[0_20px_50px_rgba(8,_112,_184,_0.08)] dark:shadow-[0_20px_50px_rgba(0,_0,_0,_0.3)] border border-white/40 dark:border-gray-700/30 max-w-3xl w-full transition-all duration-500 hover:scale-[1.01] hover:shadow-2xl">
+                    
+                    {!imageLoaded && (
+                        <div className="absolute inset-4 md:inset-6 bg-gray-200 dark:bg-gray-700 rounded-2xl animate-pulse flex items-center justify-center min-h-[300px]">
+                            <span className="text-gray-400 dark:text-gray-500 text-sm">Carregando imagem...</span>
+                        </div>
+                    )}
+
                     <img 
                         src="/iasdd.jpg" 
                         alt="QR Code Pix e 7me" 
-                        className="w-full h-auto rounded-2xl select-none group-hover:opacity-95 transition-opacity duration-300"
-                        
+                        onLoad={() => setImageLoaded(true)}
+                        className={`w-full h-auto rounded-2xl select-none group-hover:opacity-95 transition-opacity duration-500 ${imageLoaded ? 'opacity-100' : 'opacity-0 absolute h-0 w-0'}`}
                     />
                 </div>
                 
