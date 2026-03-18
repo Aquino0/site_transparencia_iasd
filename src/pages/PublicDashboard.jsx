@@ -87,11 +87,6 @@ export function PublicDashboard() {
             </motion.div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div className="flex justify-end mb-4 print:hidden mt-4">
-                    <button onClick={() => window.print()} className="text-blue-900 font-semibold hover:underline text-sm flex items-center gap-1 bg-white px-3 py-1 rounded border border-blue-100 shadow-sm">
-                        <Printer size={16} /> Exportar Relatório
-                    </button>
-                </div>
 
                 <MonthSelector restrictView={true} />
 
