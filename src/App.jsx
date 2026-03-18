@@ -6,10 +6,15 @@ import { AdminLogin } from './pages/AdminLogin';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { Donation } from './pages/Donation';
 import { ThemeProvider } from './context/ThemeContext';
+import { useVisitTracker } from './hooks/useVisitTracker';
+import { Analytics } from './components/Analytics';
 
 function App() {
+  useVisitTracker(); // Ativa rastreio de visitas
+
   return (
     <ThemeProvider>
+      <Analytics />
       <BrowserRouter>
           <Routes>
             <Route path="/" element={<Layout><PublicDashboard /></Layout>} />
