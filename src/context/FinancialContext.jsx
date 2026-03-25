@@ -1,7 +1,30 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import toast from 'react-hot-toast';
 
 const FinancialContext = createContext();
+
+// Sanitiza strings removendo tags HTML/script para prevenir XSS armazenado no localStorage
+function sanitizeString(str) {
+    if (typeof str !== 'string') return str;
+    return str
+        .replace(/<script[\s\S]*?<\/script>/gi, '') // Remove blocos <script>
+        .replace(/<[^>]+>/g, '')                      // Remove qualquer outra tag HTML
+        .trim();
+}
+
+function sanitizeSettings(rawSettings) {
+    if (!rawSettings || typeof rawSettings !== 'object') return rawSettings;
+    return {
+        ...rawSettings,
+        churchName: sanitizeString(rawSettings.churchName),
+        welcomeText: sanitizeString(rawSettings.welcomeText),
+        bibleVerse: rawSettings.bibleVerse ? {
+            text: sanitizeString(rawSettings.bibleVerse.text),
+            reference: sanitizeString(rawSettings.bibleVerse.reference),
+        } : rawSettings.bibleVerse,
+    };
+}
 
 export function FinancialProvider({ children }) {
     const [transactions, setTransactions] = useState([]);
@@ -22,8 +45,15 @@ export function FinancialProvider({ children }) {
         };
 
         if (saved) {
-            const parsed = JSON.parse(saved);
-            return { ...defaults, ...parsed, visibleMonths: parsed.visibleMonths || [] };
+            try {
+                const parsed = JSON.parse(saved);
+                const sanitized = sanitizeSettings(parsed);
+                return { ...defaults, ...sanitized, visibleMonths: parsed.visibleMonths || [] };
+            } catch {
+                // Se o JSON estiver corrompido, descarta e usa os defaults
+                localStorage.removeItem('iasd_settings');
+                return defaults;
+            }
         }
         return defaults;
     });
@@ -80,7 +110,7 @@ export function FinancialProvider({ children }) {
                 return true;
             }
         } catch (error) {
-            alert('Erro ao salvar: ' + error.message);
+            toast.error('Erro ao salvar: ' + error.message);
             return false;
         }
     };
@@ -97,7 +127,7 @@ export function FinancialProvider({ children }) {
             setTransactions(prev => prev.filter(t => t.id !== id));
             return true;
         } catch (error) {
-            alert('Erro ao excluir: ' + error.message);
+            toast.error('Erro ao excluir: ' + error.message);
             return false;
         }
     };
@@ -120,7 +150,7 @@ export function FinancialProvider({ children }) {
                 return true;
             }
         } catch (error) {
-            alert('Erro ao atualizar: ' + error.message);
+            toast.error('Erro ao atualizar: ' + error.message);
             return false;
         }
     };
@@ -137,11 +167,11 @@ export function FinancialProvider({ children }) {
                     .from('monthly_stats')
                     .select('*')
                     .eq('month_key', selectedMonth)
-                    .single();
+                    .maybeSingle();
 
                 if (!isActive) return;
 
-                if (error && error.code !== 'PGRST116') throw error;
+                if (error) throw error;
 
                 // Se não existir, retorna objeto vazio/zerado para não quebrar a UI
                 setMonthlyStats(data || {
@@ -194,11 +224,10 @@ export function FinancialProvider({ children }) {
 
             if (result.error) throw result.error;
 
-            console.log('updateMonthlyStats success, result data:', result.data[0]);
             setMonthlyStats(result.data[0]);
             return true;
         } catch (error) {
-            alert('Erro ao salvar estatísticas: ' + error.message);
+            toast.error('Erro ao salvar estatísticas: ' + error.message);
             return false;
         }
     }
@@ -219,9 +248,10 @@ export function FinancialProvider({ children }) {
             }
 
             if (data && data.value) {
-                setSettings(prev => ({ ...prev, ...data.value }));
+                const sanitized = sanitizeSettings(data.value);
+                setSettings(prev => ({ ...prev, ...sanitized }));
                 // Atualiza local também para garantir sync rápido em refresh
-                localStorage.setItem('iasd_settings', JSON.stringify(data.value));
+                localStorage.setItem('iasd_settings', JSON.stringify(sanitized));
             }
         } catch (error) {
             console.error('Erro fetchSettings:', error);
@@ -247,7 +277,7 @@ export function FinancialProvider({ children }) {
 
             if (error) throw error;
         } catch (error) {
-            alert('Erro ao salvar configurações no servidor: ' + error.message);
+            toast.error('Erro ao salvar configurações no servidor: ' + error.message);
         }
     };
 
@@ -263,7 +293,7 @@ export function FinancialProvider({ children }) {
             password,
         });
         if (error) {
-            alert('Erro no login: ' + error.message);
+            toast.error('Erro no login: ' + error.message);
             return false;
         }
         return true;

@@ -28,7 +28,7 @@ function TrendBadge({ current, previous, type }) {
     );
 }
 
-function Card({ title, value, type, icon: Icon, previousValue, index }) {
+function Card({ title, value, type, icon: Icon, previousValue, index, subtitle }) {
     const isPositive = type === 'income' || (type === 'balance' && value >= 0);
     const colorClass =
         type === 'income' ? 'text-green-600 bg-green-50' :
@@ -58,6 +58,13 @@ function Card({ title, value, type, icon: Icon, previousValue, index }) {
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
             </h3>
 
+            {/* Subtítulo de data de referência (ex: Saldo Anterior) */}
+            {subtitle && (
+                <p className="text-xs text-slate-400 dark:text-gray-500 mt-1.5 font-medium">
+                    Posição em {subtitle}
+                </p>
+            )}
+
             {(type === 'income' || type === 'expense') && (
                 <div className="mt-2">
                     <TrendBadge current={value} previous={previousValue} type={type} />
@@ -67,15 +74,36 @@ function Card({ title, value, type, icon: Icon, previousValue, index }) {
     );
 }
 
-export function SummaryCards({ income, expense, previousBalance, lastMonthIncome, lastMonthExpense }) {
+export function SummaryCards({ income, expense, previousBalance, lastMonthIncome, lastMonthExpense, selectedMonth }) {
     const result = income - expense;
     const currentBalance = previousBalance + result;
 
+    // Calcula o último dia do mês anterior ao selectedMonth
+    // Ex: selectedMonth = "2026-03" → new Date(2026, 2, 0) = 28/02/2026
+    const prevMonthLastDay = (() => {
+        if (!selectedMonth) return null;
+        const [year, month] = selectedMonth.split('-').map(Number);
+        const lastDay = new Date(year, month - 1, 0); // dia 0 do mês atual = último dia do mês anterior
+        return lastDay.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    })();
+
+    // Ícones Emoji Customizados
+    const createEmojiIcon = (emoji) => ({ size }) => (
+        <span style={{ fontSize: size, display: 'block', lineHeight: 1, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}>
+            {emoji}
+        </span>
+    );
+
+    const PrevBalanceIcon = createEmojiIcon('🪙'); // Moedas para o passado
+    const IncomeIcon = createEmojiIcon('💰'); // Saco de ouro
+    const ExpenseIcon = createEmojiIcon('💸'); // Dinheiro voando (Saídas)
+    const CurrentBalanceIcon = createEmojiIcon('🏦'); // Banco / Cofre (Saldo Atual)
+
     const cards = [
-        { title: "Saldo Anterior", value: previousBalance, type: "neutral", icon: Wallet },
-        { title: "Entradas do Mês", value: income, type: "income", icon: ArrowUpCircle, previousValue: lastMonthIncome },
-        { title: "Saídas do Mês", value: expense, type: "expense", icon: ArrowDownCircle, previousValue: lastMonthExpense },
-        { title: "Saldo Atual", value: currentBalance, type: "balance", icon: Wallet }
+        { title: "Saldo Anterior", value: previousBalance, type: "neutral", icon: PrevBalanceIcon, subtitle: prevMonthLastDay },
+        { title: "Entradas do Mês", value: income, type: "income", icon: IncomeIcon, previousValue: lastMonthIncome },
+        { title: "Saídas do Mês", value: expense, type: "expense", icon: ExpenseIcon, previousValue: lastMonthExpense },
+        { title: "Saldo Atual", value: currentBalance, type: "balance", icon: CurrentBalanceIcon }
     ];
 
     return (

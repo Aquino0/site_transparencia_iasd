@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { X } from 'lucide-react';
 
 const CATEGORIES = [
@@ -21,29 +22,22 @@ const CATEGORIES = [
 ];
 
 export function TransactionForm({ onSubmit, initialData, onCancel }) {
-    const [formData, setFormData] = useState({
-        type: 'expense',
-        date: new Date().toISOString().slice(0, 10),
-        description: '',
-        value: '',
-        category: CATEGORIES[0]
+    const { register, handleSubmit, reset } = useForm({
+        defaultValues: {
+            type: 'expense',
+            date: new Date().toISOString().slice(0, 10),
+            description: '',
+            value: '',
+            category: CATEGORIES[0]
+        }
     });
 
     useEffect(() => {
-        if (initialData) {
-            setFormData({
-                ...initialData,
-                value: initialData.value // Value comes as number
-            });
-        }
-    }, [initialData]);
+        if (initialData) reset(initialData);
+    }, [initialData, reset]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSubmit({
-            ...formData,
-            value: parseFloat(formData.value)
-        });
+    const submitForm = (data) => {
+        onSubmit({ ...data, value: parseFloat(data.value) });
     };
 
     return (
@@ -58,13 +52,12 @@ export function TransactionForm({ onSubmit, initialData, onCancel }) {
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit(submitForm)} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo</label>
                             <select
-                                value={formData.type}
-                                onChange={e => setFormData({ ...formData, type: e.target.value })}
+                                {...register('type')}
                                 className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                             >
                                 <option value="income">Entrada</option>
@@ -76,8 +69,7 @@ export function TransactionForm({ onSubmit, initialData, onCancel }) {
                             <input
                                 type="date"
                                 required
-                                value={formData.date}
-                                onChange={e => setFormData({ ...formData, date: e.target.value })}
+                                {...register('date')}
                                 className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                             />
                         </div>
@@ -89,8 +81,7 @@ export function TransactionForm({ onSubmit, initialData, onCancel }) {
                             type="text"
                             required
                             placeholder="Ex: Conta de Luz"
-                            value={formData.description}
-                            onChange={e => setFormData({ ...formData, description: e.target.value })}
+                            {...register('description')}
                             className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                         />
                     </div>
@@ -104,16 +95,14 @@ export function TransactionForm({ onSubmit, initialData, onCancel }) {
                                 step="0.01"
                                 min="0"
                                 placeholder="0,00"
-                                value={formData.value}
-                                onChange={e => setFormData({ ...formData, value: e.target.value })}
+                                {...register('value', { required: true, min: 0 })}
                                 className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                             />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoria</label>
                             <select
-                                value={formData.category}
-                                onChange={e => setFormData({ ...formData, category: e.target.value })}
+                                {...register('category')}
                                 className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                             >
                                 {CATEGORIES.map(cat => (

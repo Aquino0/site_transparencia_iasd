@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { TitheCalculator } from '../components/ui/TitheCalculator';
 
 export function Donation() {
     const [copied, setCopied] = useState(false);
@@ -55,9 +56,10 @@ export function Donation() {
                     )}
 
                     <img 
-                        src="/iasdd.jpg" 
+                        src="/iasdd-optimized.jpg" 
                         alt="QR Code Pix e 7me" 
                         onLoad={() => setImageLoaded(true)}
+                        fetchPriority="high"
                         className={`w-full h-auto rounded-2xl select-none group-hover:opacity-95 transition-opacity duration-500 ${imageLoaded ? 'opacity-100' : 'opacity-0 absolute h-0 w-0'}`}
                     />
                 </div>
@@ -98,6 +100,9 @@ export function Donation() {
                     Transferência 100% segura para a Tesouraria.
                 </p>
             </div>
+
+            {/* Calculadora flutuante também na tela de Doação */}
+            <TitheCalculator />
         </div>
     );
 }

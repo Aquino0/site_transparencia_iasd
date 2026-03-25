@@ -9,6 +9,8 @@ import { BookOpen, Printer } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import { HeroSequence } from '../components/ui/HeroSequence';
+import { useDashboardStats } from '../hooks/useDashboardStats';
+import { TitheCalculator } from '../components/ui/TitheCalculator';
 
 export function PublicDashboard() {
     const { settings, transactions, selectedMonth, monthlyStats, setSelectedMonth, isAdmin } = useFinancial();
@@ -24,26 +26,16 @@ export function PublicDashboard() {
         }
     }, [selectedMonth, settings.visibleMonths, setSelectedMonth]);
 
-    const { currentTransactions, previousBalance, totalIncome, totalExpense, lastMonthIncome, lastMonthExpense } = useMemo(() => {
-        const allTransactions = Array.isArray(transactions) ? transactions : [];
-        const current = allTransactions.filter(t => t.date && t.date.startsWith(selectedMonth));
-        const previous = allTransactions.filter(t => t.date && t.date < selectedMonth + '-01');
-        const prevIncome = previous.filter(t => t.type === 'income').reduce((acc, t) => acc + (Number(t.value) || 0), 0);
-        const prevExpense = previous.filter(t => t.type === 'expense').reduce((acc, t) => acc + (Number(t.value) || 0), 0);
-        const prevBalance = prevIncome - prevExpense;
-        const inc = current.filter(t => t.type === 'income').reduce((acc, t) => acc + (Number(t.value) || 0), 0);
-        const exp = current.filter(t => t.type === 'expense').reduce((acc, t) => acc + (Number(t.value) || 0), 0);
-        const [year, month] = selectedMonth.split('-').map(Number);
-        let lastMonthDate = month === 1 ? new Date(year - 1, 11) : new Date(year, month - 2);
-        const lastMonthStr = `${lastMonthDate.getFullYear()}-${String(lastMonthDate.getMonth() + 1).padStart(2, '0')}`;
-        const lastMonthTransactions = allTransactions.filter(t => t.date && t.date.startsWith(lastMonthStr));
-        const lastMonthIncome = lastMonthTransactions.filter(t => t.type === 'income').reduce((acc, t) => acc + (Number(t.value) || 0), 0);
-        const lastMonthExpense = lastMonthTransactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + (Number(t.value) || 0), 0);
-        return { currentTransactions: current, previousBalance: prevBalance, totalIncome: inc, totalExpense: exp, lastMonthIncome, lastMonthExpense };
-    }, [transactions, selectedMonth]);
-
-    const incomeTransactions = currentTransactions.filter(t => t.type === 'income');
-    const expenseTransactions = currentTransactions.filter(t => t.type === 'expense');
+    const { 
+        currentTransactions, 
+        previousBalance, 
+        totalIncome, 
+        totalExpense, 
+        lastMonthIncome, 
+        lastMonthExpense,
+        incomeTransactions,
+        expenseTransactions
+    } = useDashboardStats(transactions, selectedMonth);
 
     return (
         <div className="relative overflow-hidden mx-auto py-8">
@@ -99,7 +91,7 @@ export function PublicDashboard() {
                     <ContributionTable stats={monthlyStats} />
                 </motion.div>
 
-                <SummaryCards income={totalIncome} expense={totalExpense} previousBalance={previousBalance} lastMonthIncome={lastMonthIncome} lastMonthExpense={lastMonthExpense} />
+                <SummaryCards income={totalIncome} expense={totalExpense} previousBalance={previousBalance} lastMonthIncome={lastMonthIncome} lastMonthExpense={lastMonthExpense} selectedMonth={selectedMonth} />
 
                 <motion.div 
                     initial={{ opacity: 0, y: 40 }}
@@ -131,6 +123,9 @@ export function PublicDashboard() {
                     </p>
                 </motion.div>
             </div>
+
+            {/* Calculadora Flutuante */}
+            <TitheCalculator />
         </div>
     );
 }

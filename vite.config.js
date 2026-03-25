@@ -5,6 +5,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    host: true, // Exporta o servidor para a rede Wi-Fi local
+  },
   plugins: [
     react(),
     tailwindcss(),

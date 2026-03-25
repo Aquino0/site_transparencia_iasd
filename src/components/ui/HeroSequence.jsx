@@ -89,20 +89,24 @@ export function HeroSequence({ children, className = '', videoUrl }) {
                     muted
                     loop
                     playsInline
-                    poster="/header-bg.png"
+                    preload="auto"
+                    poster="/por%20do%20sol.png"
                     className="absolute inset-0 w-full h-full object-cover"
+                    style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
                 />
             ) : (
                 <canvas
                     ref={canvasRef}
                     className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                    style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
                 />
             )}
-            {/* Overlay Escuro para Legibilidade (Removido por solicitação) */}
-            {/* <div className="absolute inset-0 bg-black/60 md:bg-black/50"></div> */}
+            
+            {/* Gradiente sutil inferior e superior para garantir legibilidade dos textos brancos sem tampar o miolo do vídeo */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/60 pointer-events-none z-10 transition-opacity duration-700"></div>
 
             {/* Content */}
-            <div className="relative z-10 w-full h-full">
+            <div className="relative z-20 w-full h-full">
                 {children}
             </div>
         </div>

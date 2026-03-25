@@ -8,12 +8,14 @@ import { Donation } from './pages/Donation';
 import { ThemeProvider } from './context/ThemeContext';
 import { useVisitTracker } from './hooks/useVisitTracker';
 import { Analytics } from './components/Analytics';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   useVisitTracker(); // Ativa rastreio de visitas
 
   return (
     <ThemeProvider>
+      <Toaster position="top-right" />
       <Analytics />
       <BrowserRouter>
           <Routes>

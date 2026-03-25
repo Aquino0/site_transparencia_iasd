@@ -20,7 +20,7 @@ export function useVisitTracker() {
                     if (data.city) city = data.city;
                     if (data.country_name) country = data.country_name;
                 } catch (apiError) {
-                    console.warn('Não foi possível obter a localização IP:', apiError);
+                    // Falha silenciosamente (Ex: bloqueadores de anúncios (AdBlock) barrando o ipapi ou falha de rede)
                     // Continua mesmo se a localização falhar, apenas salvando como Desconhecido
                 }
 

@@ -1,28 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { X } from 'lucide-react';
 import { useFinancial } from '../../context/FinancialContext';
 
 export function SettingsForm({ onCancel }) {
     const { settings, setSettings } = useFinancial();
-    const [formData, setFormData] = useState({
-        
-        welcomeText: settings.welcomeText,
-        bibleVerseText: settings.bibleVerse?.text || '',
-        bibleVerseRef: settings.bibleVerse?.reference || '',
-        visibleMonths: settings.visibleMonths || []
+    
+    const { register, handleSubmit, reset } = useForm({
+        defaultValues: {
+            welcomeText: settings.welcomeText || '',
+            bibleVerseText: settings.bibleVerse?.text || '',
+            bibleVerseRef: settings.bibleVerse?.reference || '',
+            visibleMonths: settings.visibleMonths || []
+        }
     });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    useEffect(() => {
+        reset({
+            welcomeText: settings.welcomeText || '',
+            bibleVerseText: settings.bibleVerse?.text || '',
+            bibleVerseRef: settings.bibleVerse?.reference || '',
+            visibleMonths: settings.visibleMonths || []
+        });
+    }, [settings, reset]);
+
+    const submitForm = (data) => {
         setSettings({
             ...settings,
-            
-            welcomeText: formData.welcomeText,
+            welcomeText: data.welcomeText,
             bibleVerse: {
-                text: formData.bibleVerseText,
-                reference: formData.bibleVerseRef
+                text: data.bibleVerseText,
+                reference: data.bibleVerseRef
             },
-            visibleMonths: formData.visibleMonths
+            visibleMonths: data.visibleMonths
         });
         onCancel();
     };
@@ -37,16 +47,13 @@ export function SettingsForm({ onCancel }) {
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto flex-1 pr-2">
-
-
+                <form onSubmit={handleSubmit(submitForm)} className="space-y-4 overflow-y-auto flex-1 pr-2">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Texto de Boas-vindas</label>
                         <textarea
                             required
                             rows={3}
-                            value={formData.welcomeText}
-                            onChange={e => setFormData({ ...formData, welcomeText: e.target.value })}
+                            {...register('welcomeText')}
                             className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                         />
                     </div>
@@ -59,8 +66,7 @@ export function SettingsForm({ onCancel }) {
                                 <textarea
                                     required
                                     rows={2}
-                                    value={formData.bibleVerseText}
-                                    onChange={e => setFormData({ ...formData, bibleVerseText: e.target.value })}
+                                    {...register('bibleVerseText')}
                                     className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                                     placeholder="Ex: O Senhor é o meu pastor..."
                                 />
@@ -70,8 +76,7 @@ export function SettingsForm({ onCancel }) {
                                 <input
                                     type="text"
                                     required
-                                    value={formData.bibleVerseRef}
-                                    onChange={e => setFormData({ ...formData, bibleVerseRef: e.target.value })}
+                                    {...register('bibleVerseRef')}
                                     className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                                     placeholder="Ex: Salmos 23:1"
                                 />
@@ -84,7 +89,6 @@ export function SettingsForm({ onCancel }) {
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Selecione os meses que devem aparecer para o público. Se nenhum for selecionado, todos aparecerão.</p>
                         <div className="grid grid-cols-3 gap-2 max-h-40 overflow-y-auto p-2 border rounded bg-gray-50 dark:bg-gray-700/50 dark:border-gray-600">
                             {
-                                // Gerar lista de meses (do ano passado até o próximo ano)
                                 (() => {
                                     const list = ['2025-12'];
                                     for (let m = 1; m <= 12; m++) list.push(`2026-${String(m).padStart(2, '0')}`);
@@ -92,26 +96,15 @@ export function SettingsForm({ onCancel }) {
                                     return list;
                                 })().map(monthStr => {
                                     const [y, m] = monthStr.split('-');
-                                    const label = `${m}/${y}`;
-                                    const isSelected = formData.visibleMonths?.includes(monthStr);
-
                                     return (
                                         <label key={monthStr} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-white dark:hover:bg-gray-600 p-1 rounded text-gray-700 dark:text-gray-200">
                                             <input
                                                 type="checkbox"
-                                                checked={isSelected}
-                                                onChange={(e) => {
-                                                    let newMonths = [...(formData.visibleMonths || [])];
-                                                    if (e.target.checked) {
-                                                        newMonths.push(monthStr);
-                                                    } else {
-                                                        newMonths = newMonths.filter(m => m !== monthStr);
-                                                    }
-                                                    setFormData({ ...formData, visibleMonths: newMonths });
-                                                }}
+                                                value={monthStr}
+                                                {...register('visibleMonths')}
                                                 className="rounded border-gray-300 text-blue-900 focus:ring-blue-900"
                                             />
-                                            {label}
+                                            {m}/{y}
                                         </label>
                                     );
                                 })

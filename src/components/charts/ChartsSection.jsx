@@ -45,41 +45,71 @@ export function ChartsSection({ transactions }) {
 
     return (
         <div className="grid md:grid-cols-2 gap-6 mb-10 print:grid-cols-2">
-            {/* Horizontal Bar Chart for Expenses Distribution */}
+            {/* Donut/Pie Chart for Expenses Distribution */}
             <div className="bg-gradient-to-r from-[#FDF6E3]/40 to-[#E5F6F0]/40 dark:from-gray-800/90 dark:to-gray-800/90 p-6 rounded-2xl shadow-sm border border-white/40 dark:border-gray-700/30 transition-all duration-300 backdrop-blur-sm">
                 <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-6 border-l-4 border-blue-900 dark:border-blue-500 pl-3">
                     Despesas por Departamento
                 </h3>
 
-                {expensesData.length > 0 ? (
-                    <div className="w-full h-[350px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart margin={{ left: 35, right: 35 }}>
-                                <Pie
-                                    data={expensesData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={70}
-                                    outerRadius={80}
-                                    paddingAngle={3}
-                                    dataKey="value"
-                                    nameKey="name"
-                                    labelLine={true}
-                                    label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-                                >
-                                    {expensesData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Legend layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ paddingTop: "10px", fontSize: "11px", fontWeight: 500 }} />
-                                <Tooltip 
-                                    contentStyle={tooltipStyle}
-                                    formatter={(value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
-                                />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                ) : (
+                {expensesData.length > 0 ? (() => {
+                    const total = expensesData.reduce((s, d) => s + d.value, 0);
+                    return (
+                        <div className="w-full h-[350px] flex flex-col items-center">
+                            <ResponsiveContainer width="100%" height="80%">
+                                <PieChart>
+                                    <Pie
+                                        data={expensesData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={120}
+                                        paddingAngle={2}
+                                        dataKey="value"
+                                        labelLine={false}
+                                        label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                                            if (percent < 0.04) return null; // Não mostra % em fatias muito pequenas
+                                            const RADIAN = Math.PI / 180;
+                                            const radius = innerRadius + (outerRadius - innerRadius) * 0.55;
+                                            const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                                            const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                                            return (
+                                                <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" style={{ fontSize: 13, fontWeight: 700, textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>
+                                                    {`${(percent * 100).toFixed(0)}%`}
+                                                </text>
+                                            );
+                                        }}
+                                    >
+                                        {expensesData.map((entry, index) => (
+                                            <Cell
+                                                key={`cell-${index}`}
+                                                fill={COLORS[index % COLORS.length]}
+                                                stroke="transparent"
+                                            />
+                                        ))}
+                                    </Pie>
+                                    {/* Label central */}
+                                    <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central">
+                                        <tspan x="50%" dy="-0.4em" style={{ fontSize: 13, fontWeight: 700, fill: isDark ? '#f9fafb' : '#1f2937' }}>Despesas</tspan>
+                                        <tspan x="50%" dy="1.4em" style={{ fontSize: 11, fill: isDark ? '#9ca3af' : '#6b7280' }}>por depto.</tspan>
+                                    </text>
+                                    <Tooltip
+                                        contentStyle={tooltipStyle}
+                                        formatter={(value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
+                                    />
+                                </PieChart>
+                            </ResponsiveContainer>
+                            {/* Legenda horizontal separada, estilo da imagem */}
+                            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 mt-1 px-2 w-full">
+                                {expensesData.map((entry, index) => (
+                                    <div key={entry.name} className="flex items-center gap-1.5">
+                                        <span className="inline-block w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                                        <span className="text-[11px] text-gray-600 dark:text-gray-400 font-medium truncate max-w-[100px]" title={entry.name}>{entry.name}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })() : (
                     <div className="h-64 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500">
                         <p>Nenhuma despesa registrada.</p>
                     </div>
